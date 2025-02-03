@@ -19,8 +19,11 @@ def post_new(request):
          form = PostForm(request.POST)
          if form.is_valid():
              post = form.save(commit=False)
-             post.author = request.user
-             post.published_date = timezone.now()
+             if request.user.is_authenticated:  # Se o usuário estiver logado, adiciona como autor
+                post.author = request.user
+             else:
+                post.author = None  # Permite postagem anônima
+                post.published_date = timezone.now()
              post.save()
              return redirect('post_detail', pk=post.pk)
      else:
